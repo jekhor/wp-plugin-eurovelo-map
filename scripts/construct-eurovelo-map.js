@@ -19,15 +19,25 @@ var WPEuroveloMapPlugin = {
 		this.add(function() {
 			var map;
 
-			map = L.map(div, 
+			map = L.map(div,
 					{
 						zoomControl: opts.zoomcontrol,
 						scrollWheelZoom: opts.scrollwheel,
 						fullscreenControl: {
 							pseudoFullscreen: false
-						}
+						},
+						gestureHandling: true
 
 					}).setView([opts.lat, opts.lng], opts.zoom);
+
+			var hash = new L.Hash(map);
+
+			L.control.locate({
+				flyTo: true,
+				locateOptions: {
+					maxZoom: 15
+				}
+			}).addTo(map);
 
 			var latlon = L.tileLayer('http://tile.latlon.org/tiles/{z}/{x}/{y}.png', {
 					opacity: 1,
@@ -121,7 +131,6 @@ var WPEuroveloMapPlugin = {
 					globusEnabled = false;
 			});
 
-
 			map.on('zoomend', function() {
 				if (map.getZoom() >= 14) {
 					if (!map.hasLayer(globusGroup) && globusEnabled)
@@ -130,13 +139,16 @@ var WPEuroveloMapPlugin = {
 					if (map.hasLayer(globusGroup))
 						map.removeLayer(globusGroup);
 				}
-				for (overlay in overlays) {
-					var o = overlays[overlay];
-					if (map.getZoom() >= o.minZoom)
-						o.layer.addTo(map);
-					else
-						map.removeLayer(o.layer);
-				}
+              for (overlay in overlays) {
+                var o = overlays[overlay];
+                if (map.getZoom() === o.minZoom) {
+                  o.layer.addTo(map);
+                } else if (map.getZoom() > o.minZoom && map.hasLayer(o.layer)) {
+                  o.layer.addTo(map);
+                } else {
+                  map.removeLayer(o.layer);
+                }
+              }
 			});
 
 
@@ -298,8 +310,8 @@ var WPEuroveloMapPlugin = {
 
 					if (poiIcons[kmlIcon]) {
 						icon = L.icon({
-							iconUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-dark-24.png',
-							iconRetinaUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-dark-48.png',
+							iconUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-transparent-24.png',
+							iconRetinaUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-transparent-48.png',
 							iconSize: [24, 24],
 						});
 					}

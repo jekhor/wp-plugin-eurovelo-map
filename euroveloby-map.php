@@ -9,7 +9,7 @@
     */
 
 if (!class_exists('Eurovelo_Map_Plugin')) {
-    
+
     class Eurovelo_Map_Plugin {
 
         public static $defaults = array (
@@ -97,6 +97,12 @@ if (!class_exists('Eurovelo_Map_Plugin')) {
 	    wp_register_style('leaflet_grouped_layer_control_css', plugins_url('lib/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.min.css', __FILE__),
 		    ['leaflet_stylesheet']);
 
+        wp_register_style('leaflet_locate_control_css', plugins_url('lib/leaflet-locatecontrol/L.Control.Locate.min.css', __FILE__),
+                    ['leaflet_stylesheet']);
+
+        wp_register_style('leaflet_gesture_handing_css', plugins_url('lib/Leaflet.GestureHandling/leaflet-gesture-handling.min.css', __FILE__),
+                            ['leaflet_stylesheet']);
+
 	    wp_register_style('font-awesome_css', plugins_url('lib/font-awesome-4.5.0/css/font-awesome.min.css', __FILE__), array());
 
             wp_register_script('leaflet_js', plugins_url('lib/Leaflet/leaflet-src.js', __FILE__), Array(), $version, true);
@@ -113,6 +119,15 @@ if (!class_exists('Eurovelo_Map_Plugin')) {
 	    wp_register_script('leaflet_featuregroup_subgroup_js', plugins_url('lib/Leaflet.markercluster/leaflet.featuregroup.subgroup.js', __FILE__),
 		    ['leaflet_js', 'leaflet_markercluster_js'], null, true);
 
+        wp_register_script('leaflet_hash_js', plugins_url('lib/leaflet-hash/leaflet-hash.js', __FILE__),
+                    ['leaflet_js'], null, true);
+        wp_register_script('leaflet_locate_control_js', plugins_url('lib/leaflet-locatecontrol/L.Control.Locate.min.js', __FILE__),
+                            ['leaflet_js'], null, true);
+        wp_register_script('leaflet_gesture_handing_js', plugins_url('lib/Leaflet.GestureHandling/leaflet-gesture-handling.min.js', __FILE__),
+                                    ['leaflet_js'], null, true);
+        wp_register_script('map_style_js', plugins_url('scripts/map-root-style.js', __FILE__),
+                                    ['leaflet_js'], null, true);
+
 //	    wp_register_script('mapbox_omnivore',
 //		    '//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.js',
 //		    ['leaflet_js'], null, true);
@@ -126,7 +141,7 @@ if (!class_exists('Eurovelo_Map_Plugin')) {
 
             /* run an init function because other wordpress plugins don't play well with their window.onload functions */
 	    wp_register_script('eurovelo_map_init', plugins_url('scripts/init-eurovelo-map.js', __FILE__),
-		    Array('leaflet_js', 'leaflet_markercluster_js', 
+		    Array('leaflet_js', 'leaflet_markercluster_js',
 		    'mapbox_omnivore', 'globus_data'), '0.1', true);
 
             /* run a construct function in the document head for the init function to use */
@@ -163,7 +178,7 @@ if (!class_exists('Eurovelo_Map_Plugin')) {
         public static $eurovelo_map_count;
 
         public function map_shortcode ( $atts ) {
-            
+
             if (!$this::$eurovelo_map_count) {
             	$this::$eurovelo_map_count = 0;
             }
@@ -183,16 +198,22 @@ if (!class_exists('Eurovelo_Map_Plugin')) {
             $default_routes_url = get_option('eurovelo_routes_baseurl', $defaults['eurovelo_routes_baseurl']);
 
             /* leaflet script */
+        wp_enqueue_script('map_style_js');
 	    wp_enqueue_style('eurovelo_map_css');
             wp_enqueue_style('leaflet_stylesheet');
 	    wp_enqueue_style('leaflet_fullscreen_css');
 	    wp_enqueue_style('leaflet_markercluster_css');
 	    wp_enqueue_style('leaflet_markercluster_def_css');
 	    wp_enqueue_style('leaflet_layer_tree_css');
+	    wp_enqueue_style('leaflet_locate_control_css');
 	    wp_enqueue_style('leaflet_grouped_layer_control_css');
+        wp_enqueue_style('leaflet_gesture_handing_css');
 	    wp_enqueue_style('font-awesome_css');
             wp_enqueue_script('leaflet_js');
             wp_enqueue_script('leaflet_fullscreen_js');
+            wp_enqueue_script('leaflet_hash_js');
+            wp_enqueue_script('leaflet_locate_control_js');
+            wp_enqueue_script('leaflet_gesture_handing_js');
             wp_enqueue_script('leaflet_markercluster_js');
             wp_enqueue_script('leaflet_featuregroup_subgroup_js');
 	    wp_enqueue_script('leaflet_layer_tree_js');
@@ -224,7 +245,7 @@ if (!class_exists('Eurovelo_Map_Plugin')) {
 
             /* allow percent, but add px for ints */
             $height .= is_numeric($height) ? 'px' : '';
-            $width .= is_numeric($width) ? 'px' : '';   
+            $width .= is_numeric($width) ? 'px' : '';
 
             /* should be iterated for multiple maps */
             $content = '<div id="eurovelo-wordpress-map-'.$eurovelo_map_count.'" class="eurovelo-wordpress-map" style="height:'.$height.'; width:'.$width.';"></div>';
