@@ -82,7 +82,7 @@ if (!class_exists('Eurovelo_Map_Plugin')) {
 	    $js_url = sprintf("//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js", $version);
 
 	    wp_register_style('leaflet_stylesheet', plugins_url('lib/Leaflet/leaflet.css', __FILE__), Array(), $version);
-	    wp_register_style('leaflet_fullscreen_css', plugins_url('lib/Leaflet.fullscreen/dist/leaflet.fullscreen.css', __FILE__),
+	    wp_register_style('leaflet_fullscreen_css', plugins_url('lib/leaflet-fullscreen/dist/leaflet.fullscreen.css', __FILE__),
 		    ['leaflet_stylesheet']);
 	    wp_register_style('leaflet_markercluster_css', plugins_url('lib/Leaflet.markercluster/dist/MarkerCluster.css', __FILE__),
 		    ['leaflet_stylesheet']);
@@ -106,7 +106,7 @@ if (!class_exists('Eurovelo_Map_Plugin')) {
 	    wp_register_style('font-awesome_css', plugins_url('lib/font-awesome-4.5.0/css/font-awesome.min.css', __FILE__), array());
 
             wp_register_script('leaflet_js', plugins_url('lib/Leaflet/leaflet-src.js', __FILE__), Array(), $version, true);
-	    wp_register_script('leaflet_fullscreen_js', plugins_url('lib/Leaflet.fullscreen/dist/Leaflet.fullscreen.min.js', __FILE__),
+	    wp_register_script('leaflet_fullscreen_js', plugins_url('lib/leaflet-fullscreen/dist/Leaflet.fullscreen.min.js', __FILE__),
 		    ['leaflet_js'], null, true);
 
 	    wp_register_script('leaflet_markercluster_js', plugins_url('lib/Leaflet.markercluster/dist/leaflet.markercluster.js', __FILE__),
