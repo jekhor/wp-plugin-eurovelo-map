@@ -12,4 +12,20 @@
 	touch-action: pan-x pan-y;
 }
 
+.control-layers-with-label {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.leaflet-control-layers .control-layers-label {
+	margin: 0 10px 0 5px;
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.leaflet-control-layers-expanded .control-layers-label {
+	display: none;
+}
+
 
