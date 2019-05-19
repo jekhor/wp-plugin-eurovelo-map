@@ -1,5 +1,8 @@
 // holds a function queue to call once leaflet.js is loaded
 // called in init-leaflet-map.js
+
+var layersState = {};
+
 var WPEuroveloMapPlugin = {
 	maps : [],
 	init : function () {
@@ -122,13 +125,29 @@ var WPEuroveloMapPlugin = {
 			var globusEnabled = true;
 
 			map.on('overlayadd', function(obj) {
-				if (obj.layer === globusGroup)
+				var layerName = obj.name;
+				var layers = Object.keys(layersState);
+				layers.forEach(function (layer) {
+					if (layersState[layer].name === layerName) {
+						layersState[layer].state = true;
+					}
+				});
+				if (obj.layer === globusGroup) {
 					globusEnabled = true;
+				}
 			});
 
 			map.on('overlayremove', function(obj) {
-				if (obj.layer === globusGroup)
+				var layerName = obj.name;
+				var layers = Object.keys(layersState);
+				layers.forEach(function (layer) {
+					if (layersState[layer].name === layerName && map.getZoom() >= layersState[layer].minZoom) {
+						layersState[layer].state = false;
+					}
+				});
+				if (obj.layer === globusGroup) {
 					globusEnabled = false;
+				}
 			});
 
 			var initZoom = null;
@@ -148,9 +167,11 @@ var WPEuroveloMapPlugin = {
 				}
 				for (overlay in overlays) {
 					var o = overlays[overlay];
-					if (map.getZoom() === o.minZoom || initZoom < o.minZoom && map.getZoom() > o.minZoom) {
-						o.layer.addTo(map);
-					} else if (map.getZoom() > o.minZoom && map.hasLayer(o.layer)) {
+					if (map.getZoom() >= o.minZoom && layersState[overlay].initLoad) {
+						layersState[overlay].state = true;
+						layersState[overlay].initLoad = false;
+					}
+					if (map.getZoom() >= o.minZoom && layersState[overlay].state) {
 						o.layer.addTo(map);
 					} else {
 						map.removeLayer(o.layer);
@@ -370,6 +391,15 @@ var WPEuroveloMapPlugin = {
 					pointGroups[group].addTo(map);
 
 				ctl.addOverlay(pointGroups[group],  poiGroupNames[group], "Точки интереса");
+			}
+			for (overlay in overlays) {
+				layersState[overlay] = {
+					name: poiGroupNames[overlay],
+					state: !!map.hasLayer(pointGroups[overlay]),
+					minZoom: overlays[overlay].minZoom,
+					layer: pointGroups[overlay],
+					initLoad: true,
+				};
 			}
 			fakePoints.off('ready');
 		});
