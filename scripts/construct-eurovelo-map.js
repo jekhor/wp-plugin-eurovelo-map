@@ -118,7 +118,7 @@ var WPEuroveloMapPlugin = {
 
 
 
-			var layersCtl = L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
+			var layersCtl = L.control.groupedLayers(baseLayers, groupedOverlays, null, opts.plugin_url).addTo(map);
 
 			var overlays = WPEuroveloMapPlugin.pointsLayers(opts.routes_base_url + '/' + 'points.kml', opts.plugin_url, opts.routes_base_url, opts.poiIcons, map, layersCtl);
 

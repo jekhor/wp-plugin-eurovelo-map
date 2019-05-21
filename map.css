@@ -28,4 +28,18 @@
 	display: none;
 }
 
+.label-with-icon {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+}
 
+.label-with-icon span, .label-with-icon input {
+	display: inline-block;
+}
+
+.label-with-icon img {
+	width: 18px;
+	margin: 0 5px;
+}
