@@ -42,4 +42,6 @@
 .label-with-icon img {
 	width: 18px;
 	margin: 0 5px;
+  position: relative;
+  top: 3px;
 }
