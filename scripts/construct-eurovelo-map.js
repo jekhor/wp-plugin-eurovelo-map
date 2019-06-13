@@ -338,8 +338,8 @@ var WPEuroveloMapPlugin = {
 
 					if (poiIcons[kmlIcon]) {
 						icon = L.icon({
-							iconUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-transparent-24.png',
-							iconRetinaUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-transparent-48.png',
+							iconUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-light-24.png',
+							iconRetinaUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-light-48.png',
 							iconSize: [24, 24],
 						});
 					}
