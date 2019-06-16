@@ -66,3 +66,11 @@
   align-items: baseline;
   justify-content: flex-start;
 }
+
+.leaflet-control-layers-expanded span {
+  margin-left: 5px;
+}
+
+.leaflet-control-layers-expanded .label-with-icon span {
+  margin-left: 0;
+}
