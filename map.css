@@ -59,3 +59,10 @@
 .leaflet-control-layers label {
   margin-right: 5px;
 }
+
+.leaflet-control-layers-expanded label {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+}
