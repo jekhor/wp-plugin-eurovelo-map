@@ -108,11 +108,10 @@ var WPEuroveloMapPlugin = {
 			};
 
 			var groupedOverlays = {
-				"Фото": {
-					"Globus.tut.by": globusGroup,
-				},
 				"Маршруты": routes_overlays,
-				"Точки интереса": {}
+				"Точки интереса": {
+					"Globus.tut.by": globusGroup,
+				}
 			};
 
 

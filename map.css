@@ -45,3 +45,7 @@
   position: relative;
   top: 3px;
 }
+
+.label-without-icon span {
+	margin-left: 5px;
+}
