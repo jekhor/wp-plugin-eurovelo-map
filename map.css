@@ -7,10 +7,10 @@
 	display: none;
 }
 
-.leaflet-container.leaflet-touch-zoom {
-	-ms-touch-action: pan-x pan-y;
-	touch-action: pan-x pan-y;
-}
+/*.leaflet-container.leaflet-touch-zoom {*/
+/*	-ms-touch-action: pan-x pan-y;*/
+/*	touch-action: pan-x pan-y;*/
+/*}*/
 
 .control-layers-with-label {
 	display: flex;
