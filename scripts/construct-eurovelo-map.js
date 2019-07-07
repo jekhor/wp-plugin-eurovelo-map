@@ -88,16 +88,19 @@ var WPEuroveloMapPlugin = {
 					'ru': {
 									'routes': 'EuroVelo Routes',
 									'vh': 'Валожынскія гасцінцы',
+                  'others': 'Іншыя'
 								},
 								'en': {
 									'routes': 'EuroVelo Routes',
 									'vh': 'Valožynskija hascincy',
+                  'others': 'Others'
 								}
 							};
 
 				var kmlFiles = {
 					'eurovelo-routes.kml': kmlFilesNames.en.routes,
-					'vh.kml': kmlFilesNames.en.vh
+					'vh.kml': kmlFilesNames.en.vh,
+					'others.kml': kmlFilesNames.en.others
 				};
 
 				for (var file in kmlFiles) {
