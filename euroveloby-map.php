@@ -4,7 +4,7 @@
     Plugin URI:
     Plugin Name: Eurovelo.by Map
     Description: A plugin for add maps of eurovelo.by routes
-    Version: 0.1
+    Version: 0.2
     License: GPL2
     */
 
