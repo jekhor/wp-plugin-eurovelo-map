@@ -186,7 +186,7 @@ var WPEuroveloMapPlugin = {
 				} else if (map.hasLayer(globusGroup) && map.getZoom() > 14) {
 					globusGroup.addTo(map);
 				} else {
-					map.removeLayer(globusGroup);
+					// map.removeLayer(globusGroup);
 				}
 				for (overlay in overlays) {
 					var o = overlays[overlay];
