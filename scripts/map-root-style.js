@@ -1,4 +1,10 @@
-const maps = Array.from(document.querySelectorAll('div[id^="eurovelo-wordpress-map-"]'));
+const isMapPage = location.pathname.includes('/map/');
+
+let maps = Array.from(document.querySelectorAll('div[id^="eurovelo-wordpress-map-"]'));
+
+if (!isMapPage) {
+  maps = [];
+}
 
 maps.forEach((map) => {
   map.classList.add('leaflet-touch-zoom');
@@ -10,7 +16,7 @@ maps.forEach((map) => {
 });
 
 window.addEventListener('resize', function () {
-  const isMapPage = location.pathname.includes('/map/');
+
   if (!isMapPage) return;
   const maps = Array.from(document.querySelectorAll('div[id^="eurovelo-wordpress-map-"]'));
 
