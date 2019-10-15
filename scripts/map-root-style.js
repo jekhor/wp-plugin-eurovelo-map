@@ -10,6 +10,8 @@ maps.forEach((map) => {
 });
 
 window.addEventListener('resize', function () {
+  const isMapPage = location.pathname.includes('/map/');
+  if (!isMapPage) return;
   const maps = Array.from(document.querySelectorAll('div[id^="eurovelo-wordpress-map-"]'));
 
   maps.forEach((map) => {
