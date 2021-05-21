@@ -1,5 +1,27 @@
 // holds a function queue to call once leaflet.js is loaded
 // called in init-leaflet-map.js
+
+var layersState = {};
+
+var layerNames = {
+  'ru': {
+    'latlon': 'LatLon',
+    'osm': 'OSM Mapnik',
+    'genshtab': 'Генштаб, 1км',
+    'rkka50k': 'РККА, 1:50000',
+    'routes': 'Маршруты',
+    'poi': 'Точки интереса',
+  },
+  'en': {
+    'latlon': 'LatLon',
+    'osm': 'OSM Mapnik',
+    'genshtab': 'General Staff, 1km',
+    'rkka50k': 'RKKA, 1:50000',
+    'routes': 'Routes',
+    'poi': 'Point of interest',
+  }
+};
+
 var WPEuroveloMapPlugin = {
 	maps : [],
 	init : function () {
@@ -19,7 +41,7 @@ var WPEuroveloMapPlugin = {
 		this.add(function() {
 			var map;
 
-			map = L.map(div, 
+			map = L.map(div,
 					{
 						zoomControl: opts.zoomcontrol,
 						scrollWheelZoom: opts.scrollwheel,
@@ -28,6 +50,15 @@ var WPEuroveloMapPlugin = {
 						}
 
 					}).setView([opts.lat, opts.lng], opts.zoom);
+
+			var hash = new L.Hash(map);
+
+			L.control.locate({
+				flyTo: true,
+				locateOptions: {
+					maxZoom: 15
+				}
+			}).addTo(map);
 
 			var latlon = L.tileLayer('http://tile.latlon.org/tiles/{z}/{x}/{y}.png', {
 					opacity: 1,
@@ -53,9 +84,23 @@ var WPEuroveloMapPlugin = {
 
 			var routes_overlays = {};
 			if (opts.routes_base_url) {
+				var kmlFilesNames = {
+					'ru': {
+									'routes': 'EuroVelo Routes',
+									'vh': 'Валожынскія гасцінцы',
+                  'others': 'Іншыя'
+								},
+								'en': {
+									'routes': 'EuroVelo Routes',
+									'vh': 'Valožynskija hascincy',
+                  'others': 'Others'
+								}
+							};
+
 				var kmlFiles = {
-					'eurovelo-routes.kml': 'EuroVelo Routes',
-					'vh.kml': 'Валожынскія гасцінцы'
+					'eurovelo-routes.kml': kmlFilesNames.en.routes,
+					'vh.kml': kmlFilesNames.en.vh,
+					'others.kml': kmlFilesNames.en.others
 				};
 
 				for (var file in kmlFiles) {
@@ -88,54 +133,75 @@ var WPEuroveloMapPlugin = {
 
 			WPEuroveloMapPlugin.loadGlobus(globusGroup);
 
-			var baseLayers = {
-				"LatLon": latlon,
-				"OSM Mapnik": osm,
-				"Генштаб, 1км": genshtab,
-				"РККА, 1:50000": rkka50k
-			};
+			var baseLayers = {};
+            baseLayers[layerNames.en.latlon] = latlon;
+            baseLayers[layerNames.en.osm] = osm;
+            baseLayers[layerNames.en.genshtab] = genshtab;
+            baseLayers[layerNames.en.rkka50k] = rkka50k;
 
-			var groupedOverlays = {
-				"Фото": {
-					"Globus.tut.by": globusGroup,
-				},
-				"Маршруты": routes_overlays,
-				"Точки интереса": {}
-			};
+			var groupedOverlays = {};
+            groupedOverlays[layerNames.en.routes] = routes_overlays;
+            groupedOverlays[layerNames.en.poi] = {"Globus.tut.by": globusGroup};
 
 
-
-			var layersCtl = L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
+			var layersCtl = L.control.groupedLayers(baseLayers, groupedOverlays, null, opts.plugin_url).addTo(map);
 
 			var overlays = WPEuroveloMapPlugin.pointsLayers(opts.routes_base_url + '/' + 'points.kml', opts.plugin_url, opts.routes_base_url, opts.poiIcons, map, layersCtl);
 
 			var globusEnabled = true;
 
 			map.on('overlayadd', function(obj) {
-				if (obj.layer === globusGroup)
+				var layerName = obj.name;
+				var layers = Object.keys(layersState);
+				layers.forEach(function (layer) {
+					if (layersState[layer].name === layerName) {
+						layersState[layer].state = true;
+					}
+				});
+				if (obj.layer === globusGroup) {
 					globusEnabled = true;
+				}
 			});
 
 			map.on('overlayremove', function(obj) {
-				if (obj.layer === globusGroup)
+				var layerName = obj.name;
+				var layers = Object.keys(layersState);
+				layers.forEach(function (layer) {
+					if (layersState[layer].name === layerName && map.getZoom() >= layersState[layer].minZoom) {
+						layersState[layer].state = false;
+					}
+				});
+				if (obj.layer === globusGroup) {
 					globusEnabled = false;
+				}
 			});
 
+			var initZoom = null;
+			map.on('zoomstart', function() {
+				initZoom = map.getZoom();
+			});
 
 			map.on('zoomend', function() {
-				if (map.getZoom() >= 14) {
-					if (!map.hasLayer(globusGroup) && globusEnabled)
+				if (map.getZoom() === 14) {
+					if (!map.hasLayer(globusGroup) && globusEnabled) {
 						globusGroup.addTo(map);
+					}
+				} else if (map.hasLayer(globusGroup) && map.getZoom() > 14) {
+					globusGroup.addTo(map);
 				} else {
-					if (map.hasLayer(globusGroup))
-						map.removeLayer(globusGroup);
+					// map.removeLayer(globusGroup);
 				}
 				for (overlay in overlays) {
 					var o = overlays[overlay];
-					if (map.getZoom() >= o.minZoom)
+					if (map.getZoom() >= o.minZoom && layersState[overlay].initLoad) {
+						layersState[overlay].state = true;
+						layersState[overlay].initLoad = false;
+					}
+					if (map.getZoom() >= o.minZoom && layersState[overlay].state) {
 						o.layer.addTo(map);
-					else
+					} else {
 						map.removeLayer(o.layer);
+					}
 				}
 			});
 
@@ -194,29 +260,56 @@ var WPEuroveloMapPlugin = {
 				'drinkingwater': 'water'
 			};
 		var poiGroupNames = {
-			'hotel': 'Отель',
-			'hostel': 'Хостел',
-			'farmstead': 'Агроусадьба',
-			'camping': 'Кемпинг',
-			'camping-paid':'Кемпинг (платный)',
-			'water': 'Питьевая вода',
-			'table': 'Стол',
-			'table-shelter': 'Стол с навесом',
-			'bike-repair': 'Велоремонт',
-			'campsite': 'Место для палатки',
-			'relax': 'Место отдыха',
-			'bike-rental': 'Аренда велосипедов',
-			'fireplace': 'Место для огня',
-			'beach': 'Пляж',
-			'cafe': 'Кафе, ресторан',
-			'toilet': 'Туалет',
-			'shop': 'Магазин',
-			'info': 'Инфопункт',
-			'railway-station': 'Станция ж/д',
-			'viewpoint': 'Обзорная точка',
-			'poi': 'Достопримечательность',
-			'bus-stop': 'Автобусная остановка',
-			'nature': 'Природный объект'
+			'ru': {
+              'hotel': 'Отель',
+              'hostel': 'Хостел',
+              'farmstead': 'Агроусадьба',
+              'camping': 'Кемпинг',
+              'camping-paid':'Кемпинг (платный)',
+              'water': 'Питьевая вода',
+              'table': 'Стол',
+              'table-shelter': 'Стол с навесом',
+              'bike-repair': 'Велоремонт',
+              'campsite': 'Место для палатки',
+              'relax': 'Место отдыха',
+              'bike-rental': 'Аренда велосипедов',
+              'fireplace': 'Место для огня',
+              'beach': 'Пляж',
+              'cafe': 'Кафе, ресторан',
+              'toilet': 'Туалет',
+              'shop': 'Магазин',
+              'info': 'Инфопункт',
+              'railway-station': 'Станция ж/д',
+              'viewpoint': 'Обзорная точка',
+              'poi': 'Достопримечательность',
+              'bus-stop': 'Автобусная остановка',
+              'nature': 'Природный объект'
+            },
+            'en': {
+              'hotel': 'Hotel',
+              'hostel': 'Hostel',
+              'farmstead': 'Farmstead',
+              'camping': 'Camping',
+              'camping-paid':'Camping (paid)',
+              'water': 'Water',
+              'table': 'Table',
+              'table-shelter': 'Canopy table',
+              'bike-repair': 'Bike repair',
+              'campsite': 'Campsite',
+              'relax': 'Resting-place',
+              'bike-rental': 'Bike rental',
+              'fireplace': 'Fireplace',
+              'beach': 'Beach',
+              'cafe': 'Cafe',
+              'toilet': 'Toilet',
+              'shop': 'Shop',
+              'info': 'Info',
+              'railway-station': 'Railway station',
+              'viewpoint': 'Viewpoint',
+              'poi': 'Point of interest',
+              'bus-stop': 'Bus stop',
+              'nature': 'Nature'
+            }
 		};
 
 		var minZooms = {
@@ -298,8 +391,8 @@ var WPEuroveloMapPlugin = {
 
 					if (poiIcons[kmlIcon]) {
 						icon = L.icon({
-							iconUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-dark-24.png',
-							iconRetinaUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-dark-48.png',
+							iconUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-light-24.png',
+							iconRetinaUrl: pluginUrl + '/images/icons/' + poiIcons[kmlIcon] + '-light-48.png',
 							iconSize: [24, 24],
 						});
 					}
@@ -350,7 +443,16 @@ var WPEuroveloMapPlugin = {
 				if (map.getZoom() >= minZooms[group])
 					pointGroups[group].addTo(map);
 
-				ctl.addOverlay(pointGroups[group],  poiGroupNames[group], "Точки интереса");
+				ctl.addOverlay(pointGroups[group],  poiGroupNames.en[group], layerNames.en.poi);
+			}
+			for (overlay in overlays) {
+				layersState[overlay] = {
+					name: poiGroupNames.en[overlay],
+					state: !!map.hasLayer(pointGroups[overlay]),
+					minZoom: overlays[overlay].minZoom,
+					layer: pointGroups[overlay],
+					initLoad: true,
+				};
 			}
 			fakePoints.off('ready');
 		});

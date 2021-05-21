@@ -3,4 +3,74 @@
 	color: #405032;
 }
 
+.transparent {
+	display: none;
+}
 
+/*.leaflet-container.leaflet-touch-zoom {*/
+/*	-ms-touch-action: pan-x pan-y;*/
+/*	touch-action: pan-x pan-y;*/
+/*}*/
+
+.control-layers-with-label {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.leaflet-control-layers .control-layers-label {
+	margin: 0 10px 0 5px;
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.leaflet-control-layers-expanded .control-layers-label {
+	display: none;
+}
+
+.label-with-icon {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.label-with-icon span, .label-with-icon input {
+	display: inline-block;
+}
+
+.label-with-icon img {
+	width: 18px;
+	margin: 0 5px;
+  position: relative;
+  top: 3px;
+}
+
+.label-without-icon span {
+	margin-left: 5px;
+}
+
+.leaflet-control-layers-list {
+  max-height: 450px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.leaflet-control-layers label {
+  margin-right: 5px;
+}
+
+.leaflet-control-layers-expanded label {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+}
+
+.leaflet-control-layers-expanded span {
+  margin-left: 5px;
+}
+
+.leaflet-control-layers-expanded .label-with-icon span {
+  margin-left: 0;
+}
