@@ -227,13 +227,13 @@ var WPEuroveloMapPlugin = {
 				if (poi.w == 'GA')
 					preview_url = 'http://orda.of.by/.ga/' + poi.ps[0] + '/' + poi.ps + '/' + poi.os + '/nf/.preview/' + poi.mi;
 				else
-					preview_url = 'http://globus.tut.by/_wh150/' + poi.ps + '/' + poi.mi;
+					preview_url = 'http://globustut.by/_wh150/' + poi.ps + '/' + poi.mi;
 
 				img = '<br/><img width="150px" src="' + preview_url + '"></img>';
 			}
 
-			marker.bindPopup('<a href="http://globus.tut.by/' + poi.ps + '"><h3>' + poi.p + '</h3></a>' +
-					'<a href="http://globus.tut.by/' + poi.ps + '/' + poi.os + '">' + poi.o + '</a><br/>' +
+			marker.bindPopup('<a href="http://globustut.by/' + poi.ps + '"><h3>' + poi.p + '</h3></a>' +
+					'<a href="http://globustut.by/' + poi.ps + '/' + poi.os + '">' + poi.o + '</a><br/>' +
 					poi.d +
 					img);
 			group.addLayer(marker);
